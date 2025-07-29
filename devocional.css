@@ -379,3 +379,29 @@ button:disabled {
 .fig8 { --rot: 5deg; }
 .fig9 { --rot: -25deg; }
 .fig10 { --rot: 20deg; }
+
+@media (max-width: 480px) {
+  .container {
+    padding: 20px 15px;
+    border-radius: 10px;
+  }
+
+  textarea {
+    font-size: 0.95rem;
+    height: 100px;
+  }
+
+  button {
+    width: 100%;
+    align-self: stretch;
+    font-size: 1rem;
+  }
+
+  h1, h2 {
+    font-size: 1.3rem;
+  }
+
+  body {
+    padding: 20px 5px;
+  }
+}
