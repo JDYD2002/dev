@@ -1,74 +1,382 @@
+:root {
+  --bg-light: linear-gradient(to bottom right, #f0f8ff, #e0eafc);
+  --bg-dark: linear-gradient(to bottom right, #2c3e50, #34495e);
+  --container-bg-light: rgba(255, 255, 255, 0.95);
+  --container-bg-dark: rgba(0, 0, 0, 0.6);
+  --text-light: #333;
+  --text-dark: #f1f1f1;
+  --accent: #3498db;
+  --success: #27ae60;
+  --error: #e74c3c;
+}
+
+/* reset básico */
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(to bottom right, #f0f8ff, #e0eafc);
-  color: #333;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg-light);
+  color: var(--text-light);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 10px;
+  transition: all 0.3s ease;
+}
+
+body.dark-mode {
+  background: var(--bg-dark);
+  color: var(--text-dark);
 }
 
 .container {
   max-width: 600px;
-  margin: 40px auto;
-  background: #ffffffdd;
-  padding: 30px;
+  width: 100%;
+  background: var(--container-bg-light);
+  padding: 30px 35px;
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+body.dark-mode .container {
+  background: var(--container-bg-dark);
+}
+
+.container:hover {
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
 
 h1, h2 {
   text-align: center;
-  color: #2c3e50;
+  color: inherit;
+  margin-top: 0;
 }
 
-textarea {
-  width: 100%;
-  height: 100px;
-  margin: 15px 0;
-  padding: 10px;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  resize: vertical;
+h3 {
+  color: inherit;
+  margin-bottom: 10px;
 }
 
+textarea,
 input {
-  display: block;
   width: 100%;
-  margin: 10px 0;
-  padding: 10px;
+  margin: 10px 0 20px;
+  padding: 12px;
   font-size: 1rem;
   border-radius: 8px;
   border: 1px solid #ccc;
+  background-color: #fff;
+  color: #333;
+  transition: border 0.3s ease, background-color 0.3s ease;
+}
+
+body.dark-mode textarea,
+body.dark-mode input {
+  background-color: #2c3e50;
+  color: #fff;
+  border: 1px solid #555;
 }
 
 button {
-  background-color: #4CAF50;
+  align-self: flex-end;
+  margin-top: -5px; /* Puxa o botão mais pra cima */
+  padding: 10px 20px;
+  background-color: #3498db;
   color: white;
-  padding: 12px 20px;
-  margin-top: 10px;
+  font-weight: bold;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s;
 }
 
 button:hover {
-  background-color: #3e8e41;
+  background-color: #2980b9;
+  transform: scale(1.03);
 }
 
-.hidden {
-  display: none;
+button:active {
+  transform: scale(0.98);
+}
+.feedback {
+  text-align: center;
+  margin-top: 15px;
+  font-weight: bold;
+  transition: color 0.3s ease;
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
+.feedback.success {
+  color: var(--success);
 }
 
-li {
-  background: #f3f3f3;
-  margin: 5px 0;
-  padding: 10px;
+.feedback.error {
+  color: var(--error);
+}
+
+.dark-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 8px 12px;
+  background-color: #ddd;
   border-radius: 8px;
-  font-size: 0.95rem;
+  transition: background 0.3s ease;
 }
+
+.dark-toggle:hover {
+  background-color: #ccc;
+}
+
+body.dark-mode .dark-toggle {
+  background-color: #444;
+  color: white;
+}
+
+/* Inputs e textarea */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
+  display: block;
+  width: 100%;
+  margin: 10px 0 20px 0;
+  padding: 12px 15px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1.8px solid #ccc;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  font-family: inherit;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus {
+  border-color: #2980b9;
+  box-shadow: 0 0 6px #2980b9aa;
+  outline: none;
+  background-color: #f9fcff;
+  transition: all 0.3s ease;
+}
+
+/* Botões */
+button {
+  background-color: #2980b9;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 25px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  margin-right: 10px;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+  font-weight: 600;
+  font-family: inherit;
+  box-shadow: 0 4px 8px #2980b9aa;
+  user-select: none;
+  min-width: 120px;
+  text-align: center;
+}
+
+button:hover {
+  background-color: #1c5980;
+  box-shadow: 0 6px 12px #1c5980cc;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button:disabled {
+  background-color: #bbb;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Login form */
+#login-form input,
+#login-form button {
+  max-width: 100%;
+}
+
+/* Área de entrada (select + textarea + botão) */
+#devocional-section select {
+  max-width: 200px;
+  font-weight: 600;
+  color: #2c3e50;
+  cursor: pointer;
+}
+
+/* Lista de histórico */
+#history {
+  list-style-type: none;
+  padding-left: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fafafa;
+  box-shadow: inset 0 1px 3px #ddd;
+}
+
+#history li {
+  border-bottom: 1px solid #ddd;
+  padding: 12px 15px;
+  transition: background-color 0.2s ease;
+  font-size: 0.95rem;
+  color: #2c3e50;
+}
+
+#history li:last-child {
+  border-bottom: none;
+}
+
+#history li:hover {
+  background-color: #e6f0fb;
+}
+
+/* Tag do tipo na listagem */
+#history li strong {
+  color: #2980b9;
+}
+
+/* Esconde elementos com a classe hidden */
+.hidden {
+  display: none !important;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  .container {
+    padding: 20px 15px;
+  }
+
+  button {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  #devocional-section select {
+    max-width: 100%;
+  }
+}
+.figurinhas img {
+  position: fixed;
+  opacity: 0.15;
+  pointer-events: none;
+  user-select: none;
+  transition: transform 0.3s ease;
+  mix-blend-mode: multiply;
+}
+
+/* Tamanhos variados */
+.figurinhas img {
+  width: 60px;
+}
+
+.fig3, .fig7, .fig10 {
+  width: 90px;
+}
+
+.fig5, .fig8 {
+  width: 50px;
+}
+
+/* Posições espalhadas */
+.fig1 {
+  top: 5%;
+  left: 5%;
+  transform: rotate(-15deg);
+}
+
+.fig2 {
+  top: 10%;
+  right: 10%;
+  transform: rotate(25deg);
+}
+
+.fig3 {
+  top: 40%;
+  left: 15%;
+  transform: rotate(-5deg);
+}
+
+.fig4 {
+  top: 65%;
+  right: 20%;
+  transform: rotate(30deg);
+}
+
+.fig5 {
+  bottom: 10%;
+  left: 8%;
+  transform: rotate(-20deg);
+}
+
+.fig6 {
+  bottom: 15%;
+  right: 15%;
+  transform: rotate(10deg);
+}
+
+.fig7 {
+  top: 80%;
+  left: 40%;
+  transform: rotate(-10deg);
+}
+
+.fig8 {
+  bottom: 35%;
+  left: 35%;
+  transform: rotate(5deg);
+}
+
+.fig9 {
+  top: 25%;
+  right: 40%;
+  transform: rotate(-25deg);
+}
+
+.fig10 {
+  bottom: 50%;
+  right: 50%;
+  transform: rotate(20deg);
+}
+
+/* Animação suave de movimento */
+@keyframes leveMovimento {
+  0%, 100% {
+    transform: translate(0, 0) rotate(var(--rot, 0deg));
+  }
+  50% {
+    transform: translate(8px, 8px) rotate(calc(var(--rot, 0deg) + 10deg));
+  }
+}
+
+.figurinhas img {
+  animation: leveMovimento 15s ease-in-out infinite;
+  --rot: 0deg;
+}
+
+/* Ajustar a rotação base para cada figurinha para animação */
+.fig1 { --rot: -15deg; }
+.fig2 { --rot: 25deg; }
+.fig3 { --rot: -5deg; }
+.fig4 { --rot: 30deg; }
+.fig5 { --rot: -20deg; }
+.fig6 { --rot: 10deg; }
+.fig7 { --rot: -10deg; }
+.fig8 { --rot: 5deg; }
+.fig9 { --rot: -25deg; }
+.fig10 { --rot: 20deg; }
