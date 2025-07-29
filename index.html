@@ -2,30 +2,54 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Devocional - Jesusinho ✝️</title>
   <link rel="stylesheet" href="devocional.css" />
 </head>
 <body>
+<button id="toggle-dark">🌙 Alternar tema</button>
   <div class="container">
-    <h1>📖 Devocional </h1>
+    <h1>📖 Devocional com Jesusinho</h1>
 
-    <div class="login-form" id="login-form">
-  <input type="text" id="displayName" placeholder="Nome que deseja ser chamado" />
-  <input type="text" id="username" placeholder="Email" />
-  <input type="password" id="password" placeholder="Senha" />
-  <button onclick="login()">Entrar</button>
-  <button onclick="register()">Registrar</button>
+    <!-- Login -->
+    <div id="login-form">
+      <input type="text" id="displayName" placeholder="Nome que deseja ser chamado" />
+      <input type="email" id="username" placeholder="Email" />
+      <input type="password" id="password" placeholder="Senha" />
+      <div style="display:flex; gap:10px; flex-wrap: wrap;">
+        <button id="btnLogin">Entrar</button>
+        <button id="btnRegister">Registrar</button>
+      </div>
+    </div>
+<div class="figurinhas">
+  <img src="fig1.png" alt="Figurinha 1" class="fig1" />
+  <img src="fig2.png" alt="Figurinha 2" class="fig2" />
+  <img src="fig3.png" alt="Figurinha 3" class="fig3" />
+  <img src="fig4.png" alt="Figurinha 4" class="fig4" />
+  <img src="fig5.png" alt="Figurinha 5" class="fig5" />
+  <img src="fig6.png" alt="Figurinha 6" class="fig6" />
+  <img src="fig7.png" alt="Figurinha 7" class="fig7" />
+  <img src="fig8.png" alt="Figurinha 8" class="fig8" />
+  <img src="fig9.png" alt="Figurinha 9" class="fig9" />
+  <img src="fig10.png" alt="Figurinha 10" class="fig10" />
 </div>
-
+    <!-- Área após login -->
     <div id="devocional-section" class="hidden">
       <h2 id="welcome"></h2>
-      <textarea id="input" placeholder="O que Deus falou com você hoje?"></textarea>
-      <button onclick="saveDevocional()">Salvar 🕊️</button>
+
+      <select id="entradaTipo" title="Tipo do registro">
+        <option value="devocional">Devocional</option>
+        <option value="louvor">Louvor</option>
+        <option value="oracao">Oração</option>
+      </select>
+
+      <textarea id="entradaTexto" placeholder="Escreva aqui..."></textarea>
+      <button id="salvarEntrada">Salvar</button>
 
       <h3>📝 Seus registros:</h3>
       <ul id="history"></ul>
-      <button onclick="logout()">Sair</button>
+
+      <button id="btnLogout" style="margin-top:20px; background:#c0392b;">Sair</button>
     </div>
   </div>
 
