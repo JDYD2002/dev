@@ -219,6 +219,7 @@ onAuthStateChanged(auth, async (user) => {
 // ✅ Salvar entrada
 btnSalvar.addEventListener("click", salvarEntrada);
 
+
 // // Opcional: Enter para login
 // emailInput.addEventListener('keydown', e => { if(e.key==='Enter') btnLogin.click(); });
 // passwordInput.addEventListener('keydown', e => { if(e.key==='Enter') btnLogin.click(); });
