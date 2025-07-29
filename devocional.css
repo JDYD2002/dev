@@ -74,7 +74,6 @@ input {
   color: #333;
   transition: border 0.3s ease, background-color 0.3s ease;
 }
-
 body.dark-mode textarea,
 body.dark-mode input {
   background-color: #2c3e50;
