@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Devocional - Jesusinho ✝️</title>
+  <link rel="stylesheet" href="devocional.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>📖 Devocional com Jesusinho</h1>
+
+    <div class="login-form" id="login-form">
+  <input type="text" id="displayName" placeholder="Nome que deseja ser chamado" />
+  <input type="text" id="username" placeholder="Email" />
+  <input type="password" id="password" placeholder="Senha" />
+  <button onclick="login()">Entrar</button>
+  <button onclick="register()">Registrar</button>
+</div>
+
+    <div id="devocional-section" class="hidden">
+      <h2 id="welcome"></h2>
+      <textarea id="input" placeholder="O que Deus falou com você hoje?"></textarea>
+      <button onclick="saveDevocional()">Salvar 🕊️</button>
+
+      <h3>📝 Seus registros:</h3>
+      <ul id="history"></ul>
+      <button onclick="logout()">Sair</button>
+    </div>
+  </div>
+
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="devocional.js"></script>
+</body>
+</html>
