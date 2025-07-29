@@ -91,18 +91,26 @@ window.logout = async () => {
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    loginForm.style.display = "none";
-    devocionalSection.style.display = "block";
-
+    // Verifica se o usuário existe na coleção "usuarios"
     const q = query(collection(db, "usuarios"), where("uid", "==", user.uid));
     const docsSnap = await getDocs(q);
-    let nome = user.email;
-    docsSnap.forEach(doc => {
-      nome = doc.data().nome;
-    });
 
+    // Se não existe documento, desloga o usuário
+    if (docsSnap.empty) {
+      await signOut(auth);
+      alert("Usuário não cadastrado. Faça o cadastro primeiro.");
+      loginForm.style.display = "block";
+      devocionalSection.style.display = "none";
+      return;
+    }
+
+    // Se existe, mostra nome e carrega a tela de devocional
+    const nome = docsSnap.docs[0].data().nome;
     welcome.innerText = `Bem-vindo, ${nome}`;
+    loginForm.style.display = "none";
+    devocionalSection.style.display = "block";
     loadHistory(user.uid);
+
   } else {
     loginForm.style.display = "block";
     devocionalSection.style.display = "none";
