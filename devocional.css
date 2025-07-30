@@ -82,8 +82,6 @@ body.dark-mode input {
 }
 
 button {
-  align-self: flex-end;
-  margin-top: -5px;
   padding: 10px 20px;
   background-color: #2980b9;
   color: white;
@@ -198,59 +196,24 @@ body.dark-mode .dark-toggle {
 .hidden {
   display: none !important;
 }
+
+/* Botões de login lado a lado responsivos */
 .button-group {
   display: flex;
   justify-content: center;
-  gap: 12px;
+  align-items: center;
+  gap: 10px;
   flex-wrap: wrap;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .button-group button {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  background-color: #4CAF50;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  flex: 1 1 120px;
+  max-width: 200px;
+  padding: 12px 20px;
 }
 
-.button-group button:hover {
-  background-color: #45a049;
-  transform: scale(1.05);
-}
-
-@media (max-width: 480px) {
-  
-  .container {
-    padding: 20px 15px;
-  }
-.dark-toggle {
-  margin-top: 490px;
-  position: fixed;
-  top: 20px;
-  right: 30px;
-  cursor: pointer;
-  font-size: 1.2rem;
-  padding: 8px 12px;
-  background-color: #ddd;
-  border-radius: 8px;
-  transition: background 0.3s ease;
-  z-index: 1000;
-}
-
-  button {
-    width: 86%;
-    margin-right: 0;
-    margin-bottom: 10px;
-  }
-  #devocional-section select {
-    max-width: 100%;
-  }
-}
-
+/* Estilo figurinhas animadas */
 .figurinhas img {
   position: fixed;
   opacity: 0.15;
@@ -285,21 +248,42 @@ body.dark-mode .dark-toggle {
 .fig9 { top: 25%; right: 40%; --rot: -25deg; }
 .fig10 { bottom: 50%; right: 50%; --rot: 20deg; }
 
- .button-group {
-   
-    align-items: center;
-  }
-
-  .button-group button {
-    width: 80%;
-  }
-
-
 @keyframes leveMovimento {
   0%, 100% {
     transform: translate(0, 0) rotate(var(--rot));
   }
   50% {
     transform: translate(8px, 8px) rotate(calc(var(--rot) + 10deg));
+  }
+}
+
+/* 📱 Responsivo para telas pequenas */
+@media (max-width: 480px) {
+  .container {
+    padding: 20px 15px;
+  }
+
+  .dark-toggle {
+    top: 20px;
+    right: 15px;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .button-group button {
+    width: 100%;
+    max-width: none;
+  }
+
+  button {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  #devocional-section select {
+    max-width: 100%;
   }
 }
