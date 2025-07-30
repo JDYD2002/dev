@@ -10,11 +10,30 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // Elementos DOM
-const toggleBtn = document.getElementById("toggle-dark");
-  toggleBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    toggleBtn.textContent = document.body.classList.contains("dark-mode") ? "☀️ Tema Claro" : "🌙 Tema Escuro";
-  });
+// Espera o DOM carregar
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.getElementById("toggle-dark");
+
+  // 🌓 1. Aplica o tema salvo ao carregar
+  const temaSalvo = localStorage.getItem("tema");
+  if (temaSalvo === "dark") {
+    document.body.classList.add("dark-mode");
+    if (toggleBtn) toggleBtn.textContent = "☀️ Tema Claro";
+  } else {
+    if (toggleBtn) toggleBtn.textContent = "🌙 Tema Escuro";
+  }
+
+  // 🌓 2. Ao clicar no botão, alterna e salva no localStorage
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      const isDark = document.body.classList.toggle("dark-mode");
+
+      toggleBtn.textContent = isDark ? "☀️ Tema Claro" : "🌙 Tema Escuro";
+      localStorage.setItem("tema", isDark ? "dark" : "light");
+    });
+  }
+});
+
 const loginForm = document.getElementById("login-form");
 const devocionalSection = document.getElementById("devocional-section");
 const welcome = document.getElementById("welcome");
@@ -218,7 +237,6 @@ onAuthStateChanged(auth, async (user) => {
 
 // ✅ Salvar entrada
 btnSalvar.addEventListener("click", salvarEntrada);
-
 
 // // Opcional: Enter para login
 // emailInput.addEventListener('keydown', e => { if(e.key==='Enter') btnLogin.click(); });
