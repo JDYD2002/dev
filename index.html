@@ -7,16 +7,18 @@
   <link rel="stylesheet" href="devocional.css" />
 </head>
 <body>
+  <!-- Botão de alternar tema -->
   <button id="toggle-dark" class="dark-toggle">🌙</button>
 
   <div class="container">
     <h1>📖 Devocional</h1>
+
     <!-- Login -->
     <div id="login-form">
       <input type="text" id="displayName" placeholder="Nome que deseja ser chamado" />
       <input type="email" id="username" placeholder="Email" />
       <input type="password" id="password" placeholder="Senha" />
-      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <div class="button-group">
         <button id="btnLogin">Entrar</button>
         <button id="btnRegister">Registrar</button>
       </div>
@@ -52,7 +54,7 @@
       <h3>📝 Seus registros:</h3>
       <ul id="history"></ul>
 
-      <button id="btnLogout" style="margin-top:20px; background:#c0392b;">Sair</button>
+      <button id="btnLogout" class="logout-button">Sair</button>
     </div>
   </div>
 
