@@ -120,25 +120,28 @@ async function salvarEntrada() {
 }
 
 // ✅ Função para carregar histórico do usuário
-async function carregarHistorico(uid) {
+async function carregarHistorico(uid, filtro = "todos") {
   history.innerHTML = "<li>Carregando...</li>";
 
   try {
-    const q = query(collection(db, "entradas"), where("uid", "==", uid));
+    let q = query(collection(db, "entradas"), where("uid", "==", uid));
+    
     const snapshot = await getDocs(q);
-
     const itens = [];
+
     snapshot.forEach(doc => {
       const data = doc.data();
-      const dataFormatada = new Date(data.data).toLocaleString('pt-BR');
-      itens.push(
-        `<li><strong>[${capitalizeFirstLetter(data.tipo)}] ${dataFormatada}</strong><br>${escapeHTML(data.texto)}</li>`
-      );
+      if (filtro === "todos" || data.tipo === filtro) {
+        const dataFormatada = new Date(data.data).toLocaleString('pt-BR');
+        itens.push(
+          `<li><strong>[${capitalizeFirstLetter(data.tipo)}] ${dataFormatada}</strong><br>${escapeHTML(data.texto)}</li>`
+        );
+      }
     });
 
     history.innerHTML = itens.length > 0
       ? itens.join("")
-      : "<li>Nenhuma entrada salva ainda.</li>";
+      : "<li>Nenhuma entrada encontrada.</li>";
   } catch (error) {
     console.error("Erro ao carregar histórico:", error);
     history.innerHTML = "<li>Erro ao carregar histórico.</li>";
@@ -237,6 +240,17 @@ onAuthStateChanged(auth, async (user) => {
 
 // ✅ Salvar entrada
 btnSalvar.addEventListener("click", salvarEntrada);
+
+//filtro
+const filtroTipo = document.getElementById("filtroTipo");
+if (filtroTipo) {
+  filtroTipo.addEventListener("change", () => {
+    const user = auth.currentUser;
+    if (user) {
+      carregarHistorico(user.uid, filtroTipo.value);
+    }
+  });
+}
 
 // // Opcional: Enter para login
 // emailInput.addEventListener('keydown', e => { if(e.key==='Enter') btnLogin.click(); });
