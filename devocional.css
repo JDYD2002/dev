@@ -205,11 +205,11 @@ body.dark-mode .dark-toggle {
   }
 
   button {
-    width: 100%;
+    width: 86%;
     margin-right: 0;
     margin-bottom: 10px;
   }
-
+p
   #devocional-section select {
     max-width: 100%;
   }
