@@ -10,7 +10,6 @@
   --error: #e74c3c;
 }
 
-/* reset básico */
 * {
   box-sizing: border-box;
 }
@@ -39,7 +38,7 @@ body.dark-mode {
   background: var(--container-bg-light);
   padding: 30px 35px;
   border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
@@ -48,7 +47,7 @@ body.dark-mode .container {
 }
 
 .container:hover {
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 h1, h2 {
@@ -74,6 +73,7 @@ input {
   color: #333;
   transition: border 0.3s ease, background-color 0.3s ease;
 }
+
 body.dark-mode textarea,
 body.dark-mode input {
   background-color: #2c3e50;
@@ -83,108 +83,21 @@ body.dark-mode input {
 
 button {
   align-self: flex-end;
-  margin-top: -5px; /* Puxa o botão mais pra cima */
+  margin-top: -5px;
   padding: 10px 20px;
-  background-color: #3498db;
+  background-color: #2980b9;
   color: white;
   font-weight: bold;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s;
-}
-
-button:hover {
-  background-color: #2980b9;
-  transform: scale(1.03);
-}
-
-button:active {
-  transform: scale(0.98);
-}
-.feedback {
-  text-align: center;
-  margin-top: 15px;
-  font-weight: bold;
-  transition: color 0.3s ease;
-}
-
-.feedback.success {
-  color: var(--success);
-}
-
-.feedback.error {
-  color: var(--error);
-}
-
-.dark-toggle {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  cursor: pointer;
-  font-size: 1.2rem;
-  padding: 8px 12px;
-  background-color: #ddd;
-  border-radius: 8px;
-  transition: background 0.3s ease;
-}
-
-.dark-toggle:hover {
-  background-color: #ccc;
-}
-
-body.dark-mode .dark-toggle {
-  background-color: #444;
-  color: white;
-}
-
-/* Inputs e textarea */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-select,
-textarea {
-  display: block;
-  width: 100%;
-  margin: 10px 0 20px 0;
-  padding: 12px 15px;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: 1.8px solid #ccc;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  font-family: inherit;
-}
-
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus,
-select:focus,
-textarea:focus {
-  border-color: #2980b9;
-  box-shadow: 0 0 6px #2980b9aa;
-  outline: none;
-  background-color: #f9fcff;
-  transition: all 0.3s ease;
-}
-
-/* Botões */
-button {
-  background-color: #2980b9;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 25px;
   font-size: 1.1rem;
-  cursor: pointer;
-  margin-right: 10px;
-  margin-top: 10px;
-  transition: background-color 0.3s ease;
-  font-weight: 600;
   font-family: inherit;
   box-shadow: 0 4px 8px #2980b9aa;
-  user-select: none;
   min-width: 120px;
   text-align: center;
+  user-select: none;
 }
 
 button:hover {
@@ -202,13 +115,48 @@ button:disabled {
   box-shadow: none;
 }
 
-/* Login form */
+.feedback {
+  text-align: center;
+  margin-top: 15px;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.feedback.success {
+  color: var(--success);
+}
+
+.feedback.error {
+  color: var(--error);
+}
+
+.dark-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 8px 12px;
+  background-color: #ddd;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+  z-index: 1000;
+}
+
+.dark-toggle:hover {
+  background-color: #ccc;
+}
+
+body.dark-mode .dark-toggle {
+  background-color: #444;
+  color: white;
+}
+
 #login-form input,
 #login-form button {
   max-width: 100%;
 }
 
-/* Área de entrada (select + textarea + botão) */
 #devocional-section select {
   max-width: 200px;
   font-weight: 600;
@@ -216,7 +164,6 @@ button:disabled {
   cursor: pointer;
 }
 
-/* Lista de histórico */
 #history {
   list-style-type: none;
   padding-left: 0;
@@ -244,17 +191,14 @@ button:disabled {
   background-color: #e6f0fb;
 }
 
-/* Tag do tipo na listagem */
 #history li strong {
   color: #2980b9;
 }
 
-/* Esconde elementos com a classe hidden */
 .hidden {
   display: none !important;
 }
 
-/* Responsividade */
 @media (max-width: 480px) {
   .container {
     padding: 20px 15px;
@@ -270,6 +214,7 @@ button:disabled {
     max-width: 100%;
   }
 }
+
 .figurinhas img {
   position: fixed;
   opacity: 0.15;
@@ -277,9 +222,10 @@ button:disabled {
   user-select: none;
   transition: transform 0.3s ease;
   mix-blend-mode: multiply;
+  animation: leveMovimento 15s ease-in-out infinite;
+  --rot: 0deg;
 }
 
-/* Tamanhos variados */
 .figurinhas img {
   width: 60px;
 }
@@ -292,116 +238,22 @@ button:disabled {
   width: 50px;
 }
 
-/* Posições espalhadas */
-.fig1 {
-  top: 5%;
-  left: 5%;
-  transform: rotate(-15deg);
-}
+.fig1 { top: 5%; left: 5%; --rot: -15deg; }
+.fig2 { top: 10%; right: 10%; --rot: 25deg; }
+.fig3 { top: 40%; left: 15%; --rot: -5deg; }
+.fig4 { top: 65%; right: 20%; --rot: 30deg; }
+.fig5 { bottom: 10%; left: 8%; --rot: -20deg; }
+.fig6 { bottom: 15%; right: 15%; --rot: 10deg; }
+.fig7 { top: 80%; left: 40%; --rot: -10deg; }
+.fig8 { bottom: 35%; left: 35%; --rot: 5deg; }
+.fig9 { top: 25%; right: 40%; --rot: -25deg; }
+.fig10 { bottom: 50%; right: 50%; --rot: 20deg; }
 
-.fig2 {
-  top: 10%;
-  right: 10%;
-  transform: rotate(25deg);
-}
-
-.fig3 {
-  top: 40%;
-  left: 15%;
-  transform: rotate(-5deg);
-}
-
-.fig4 {
-  top: 65%;
-  right: 20%;
-  transform: rotate(30deg);
-}
-
-.fig5 {
-  bottom: 10%;
-  left: 8%;
-  transform: rotate(-20deg);
-}
-
-.fig6 {
-  bottom: 15%;
-  right: 15%;
-  transform: rotate(10deg);
-}
-
-.fig7 {
-  top: 80%;
-  left: 40%;
-  transform: rotate(-10deg);
-}
-
-.fig8 {
-  bottom: 35%;
-  left: 35%;
-  transform: rotate(5deg);
-}
-
-.fig9 {
-  top: 25%;
-  right: 40%;
-  transform: rotate(-25deg);
-}
-
-.fig10 {
-  bottom: 50%;
-  right: 50%;
-  transform: rotate(20deg);
-}
-
-/* Animação suave de movimento */
 @keyframes leveMovimento {
   0%, 100% {
-    transform: translate(0, 0) rotate(var(--rot, 0deg));
+    transform: translate(0, 0) rotate(var(--rot));
   }
   50% {
-    transform: translate(8px, 8px) rotate(calc(var(--rot, 0deg) + 10deg));
-  }
-}
-
-.figurinhas img {
-  animation: leveMovimento 15s ease-in-out infinite;
-  --rot: 0deg;
-}
-
-/* Ajustar a rotação base para cada figurinha para animação */
-.fig1 { --rot: -15deg; }
-.fig2 { --rot: 25deg; }
-.fig3 { --rot: -5deg; }
-.fig4 { --rot: 30deg; }
-.fig5 { --rot: -20deg; }
-.fig6 { --rot: 10deg; }
-.fig7 { --rot: -10deg; }
-.fig8 { --rot: 5deg; }
-.fig9 { --rot: -25deg; }
-.fig10 { --rot: 20deg; }
-
-@media (max-width: 480px) {
-  .container {
-    padding: 20px 15px;
-    border-radius: 10px;
-  }
-
-  textarea {
-    font-size: 0.95rem;
-    height: 100px;
-  }
-
-  button {
-    width: 100%;
-    align-self: stretch;
-    font-size: 1rem;
-  }
-
-  h1, h2 {
-    font-size: 1.3rem;
-  }
-
-  body {
-    padding: 20px 5px;
+    transform: translate(8px, 8px) rotate(calc(var(--rot) + 10deg));
   }
 }
