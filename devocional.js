@@ -1,257 +1,274 @@
-import { auth, db } from './firebase-config.js';
+import { auth, db } from "./firebase-config.js";
 import {
-  signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {
-  collection, addDoc, query, where, getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// Elementos DOM
-// Espera o DOM carregar
-document.addEventListener("DOMContentLoaded", () => {
-  const toggleBtn = document.getElementById("toggle-dark");
+const BASE_URL = "https://hoperbackk.onrender.com"; // ou sua URL de deploy
 
-  // 🌓 1. Aplica o tema salvo ao carregar
-  const temaSalvo = localStorage.getItem("tema");
-  if (temaSalvo === "dark") {
-    document.body.classList.add("dark-mode");
-    if (toggleBtn) toggleBtn.textContent = "☀️ Tema Claro";
-  } else {
-    if (toggleBtn) toggleBtn.textContent = "🌙 Tema Escuro";
-  }
+// ====================== VARIÁVEIS ======================
+let currentUserData = null; // mantém dados do usuário localmente
 
-  // 🌓 2. Ao clicar no botão, alterna e salva no localStorage
-  if (toggleBtn) {
-    toggleBtn.addEventListener("click", () => {
-      const isDark = document.body.classList.toggle("dark-mode");
-
-      toggleBtn.textContent = isDark ? "☀️ Tema Claro" : "🌙 Tema Escuro";
-      localStorage.setItem("tema", isDark ? "dark" : "light");
-    });
-  }
-});
-
-const loginForm = document.getElementById("login-form");
-const devocionalSection = document.getElementById("devocional-section");
-const welcome = document.getElementById("welcome");
-const history = document.getElementById("history");
-const displayNameInput = document.getElementById("displayName");
-const emailInput = document.getElementById("username");
-const passwordInput = document.getElementById("password");
-const entradaTipo = document.getElementById("entradaTipo");
-const entradaTexto = document.getElementById("entradaTexto");
-const btnLogin = document.getElementById("btnLogin");
-const btnRegister = document.getElementById("btnRegister");
-const btnSalvar = document.getElementById("salvarEntrada");
+// ====================== DOM ======================
+const authSection = document.getElementById("authSection");
+const agentSection = document.getElementById("agentSection");
+const chatBox = document.getElementById("chatBox");
+const msgInput = document.getElementById("msgInput");
+const btnEnviar = document.getElementById("btnEnviar");
 const btnLogout = document.getElementById("btnLogout");
+const welcome = document.getElementById("welcome");
+const userBadge = document.getElementById("userBadge");
+const hoperImg = document.getElementById("hoperImg");
+const btnSintoma = document.getElementById("btnSintoma");
+const btnDica = document.getElementById("btnDica");
+const btnPostos = document.getElementById("btnPostos");
 
-// ✅ Função para mostrar versículo de parabéns
-function mostrarVersiculoParabens() {
-  const versiculo = `Parabéns por fazer seu devocional! 🙏\n“Tudo o que fizerem, façam de todo o coração, como para o Senhor.” — Colossenses 3:23`;
+// Inputs login
+const loginEmail = document.getElementById("loginEmail");
+const loginSenha = document.getElementById("loginSenha");
+const btnLogin = document.getElementById("btnLogin");
 
-  const divMsg = document.createElement('div');
-  divMsg.innerText = versiculo;
-  Object.assign(divMsg.style, {
-    position: 'fixed',
-    bottom: '30px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    backgroundColor: '#2ecc71',
-    color: '#fff',
-    padding: '16px 24px',
-    borderRadius: '10px',
-    boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
-    fontSize: '1.1rem',
-    whiteSpace: 'pre-line',
-    zIndex: 10000,
-    opacity: '0',
-    transition: 'opacity 0.4s ease',
+// Inputs registro
+const regNome = document.getElementById("regNome");
+const regIdade = document.getElementById("regIdade");
+const regEmail = document.getElementById("regEmail");
+const regCep = document.getElementById("regCep");
+const regSenha = document.getElementById("regSenha");
+const btnRegister = document.getElementById("btnRegister");
+
+// ====================== FUNÇÕES AUXILIARES ======================
+function avatarPorIdade(idade) {
+  if (!idade) idade = 30;
+  return idade <= 17 ? "hoper_jovem_feliz.gif" : "hoper_adulto_feliz.gif";
+}
+
+function atualizarHoperPorHumor(texto) {
+  if (!hoperImg || !currentUserData) return;
+  const idade = currentUserData.idade || 30;
+  const t = (texto || "").toLowerCase();
+  if (t.match(/obrigado|ótimo|feliz|melhora|alívio/i)) {
+    hoperImg.src = idade <= 17 ? "hoper_jovem_feliz.gif" : "hoper_adulto_feliz.gif";
+  } else if (t.match(/dor|problema|sintoma|alerta|urgente/i)) {
+    hoperImg.src = idade <= 17 ? "hoper_jovem_preocupado.gif" : "hoper_adulto_preocupado.gif";
+  } else {
+    hoperImg.src = avatarPorIdade(idade);
+  }
+}
+
+function setHeader(user) {
+  currentUserData = user;
+  const primeiroNome = (user?.nome || user?.email || "Usuário").split(" ")[0];
+  welcome.textContent = `Bem-vindo(a), ${primeiroNome}`;
+  userBadge.textContent = `${user?.cep || ""} • ${user?.idade || ""} anos`;
+  if (hoperImg) hoperImg.src = avatarPorIdade(user?.idade);
+}
+
+function addMsg(who, text) {
+  const row = document.createElement("div");
+  row.className = `msg ${who === "Você" ? "user" : "bot"}`;
+  row.innerHTML = `
+    <div class="who">${who}</div>
+    <div class="bubble">${text.replace(/\n/g, "<br>")}</div>
+  `;
+  chatBox.appendChild(row);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function showAuth() {
+  authSection.classList.remove("hidden");
+  agentSection.classList.add("hidden");
+}
+
+function showAgent() {
+  authSection.classList.add("hidden");
+  agentSection.classList.remove("hidden");
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// ====================== ABAS LOGIN/REGISTRO ======================
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    document.querySelectorAll(".form-box").forEach(f => f.classList.add("hidden"));
+    document.getElementById(btn.dataset.target).classList.remove("hidden");
   });
-
-  document.body.appendChild(divMsg);
-
-  requestAnimationFrame(() => {
-    divMsg.style.opacity = '1';
-  });
-
-  setTimeout(() => {
-    divMsg.style.opacity = '0';
-    setTimeout(() => divMsg.remove(), 400);
-  }, 6000);
-}
-
-// ✅ Função para salvar entrada
-async function salvarEntrada() {
-  const texto = entradaTexto.value.trim();
-  const tipo = entradaTipo.value;
-  const user = auth.currentUser;
-
-  if (!user) {
-    alert("Você precisa estar logado!");
-    return;
-  }
-  if (!texto) {
-    alert("Digite algum texto para salvar.");
-    entradaTexto.focus();
-    return;
-  }
-
-  try {
-    await addDoc(collection(db, "entradas"), {
-      uid: user.uid,
-      email: user.email,
-      tipo,
-      texto,
-      data: new Date().toISOString()
-    });
-
-    entradaTexto.value = "";
-    carregarHistorico(user.uid);
-
-    // ✅ Mostra versículo após salvar
-    mostrarVersiculoParabens();
-  } catch (error) {
-    console.error("Erro ao salvar entrada:", error);
-    alert("Erro ao salvar, tente novamente.");
-  }
-}
-
-// ✅ Função para carregar histórico do usuário
-async function carregarHistorico(uid, filtro = "todos") {
-  history.innerHTML = "<li>Carregando...</li>";
-
-  try {
-    let q = query(collection(db, "entradas"), where("uid", "==", uid));
-    
-    const snapshot = await getDocs(q);
-    const itens = [];
-
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      if (filtro === "todos" || data.tipo === filtro) {
-        const dataFormatada = new Date(data.data).toLocaleString('pt-BR');
-        itens.push(
-          `<li><strong>[${capitalizeFirstLetter(data.tipo)}] ${dataFormatada}</strong><br>${escapeHTML(data.texto)}</li>`
-        );
-      }
-    });
-
-    history.innerHTML = itens.length > 0
-      ? itens.join("")
-      : "<li>Nenhuma entrada encontrada.</li>";
-  } catch (error) {
-    console.error("Erro ao carregar histórico:", error);
-    history.innerHTML = "<li>Erro ao carregar histórico.</li>";
-  }
-}
-
-// Utilitários
-function escapeHTML(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
-
-function capitalizeFirstLetter(str) {
-  return str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
-}
-
-// ✅ Login
-btnLogin.addEventListener("click", () => {
-  const email = emailInput.value.trim();
-  const senha = passwordInput.value.trim();
-  if (!email || !senha) {
-    alert("Preencha email e senha");
-    return;
-  }
-
-  signInWithEmailAndPassword(auth, email, senha)
-    .catch(e => alert("Erro ao logar: " + e.message));
 });
 
-// ✅ Registro
+// ====================== VALIDAÇÕES ======================
+function validarNome(nome) {
+  return /^[A-Za-zÀ-ú\s]+$/.test(nome.trim());
+}
+
+function validarIdade(idade) {
+  return !isNaN(idade) && idade > 0 && idade < 150;
+}
+
+function validarCEP(cep) {
+  return /^\d{8}$/.test(cep);
+}
+
+// ====================== REGISTRO ======================
 btnRegister.addEventListener("click", async () => {
-  const email = emailInput.value.trim();
-  const senha = passwordInput.value.trim();
-  const nome = displayNameInput.value.trim();
-  if (!email || !senha || !nome) {
-    alert("Preencha todos os campos");
+  const nome = regNome.value.trim();
+  const email = regEmail.value.trim();
+  const idade = parseInt(regIdade.value, 10);
+  const cep = regCep.value.replace(/\D/g, '');
+  const senha = regSenha.value.trim();
+
+  if (!nome || !email || !cep || !idade || !senha) {
+    alert("Preencha todos os campos.");
     return;
   }
 
   try {
-    const cred = await createUserWithEmailAndPassword(auth, email, senha);
-    const user = cred.user;
+    // 🔹 Cria usuário no Firebase
+    const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+    const user = userCredential.user;
 
-    await addDoc(collection(db, "usuarios"), {
-      uid: user.uid,
-      email: user.email,
-      nome
+    // 🔹 Salva dados do usuário no Firestore
+    await setDoc(doc(db, "usuarios", user.uid), {
+      nome,
+      email,
+      idade,
+      cep
     });
 
-    alert("Conta criada! Faça login.");
-    displayNameInput.value = "";
-    passwordInput.value = "";
+    setHeader({ nome, email, idade, cep });
+    chatBox.innerHTML = "";
+    addMsg("Hoper", `Olá, ${nome.split(" ")[0]}! Estou aqui para ajudar. 👩‍⚕️`);
+    showAgent();
   } catch (e) {
-    alert("Erro ao registrar: " + e.message);
+    alert(e.message || "Erro ao registrar");
   }
 });
 
-// ✅ Logout
+// ====================== LOGIN ======================
+btnLogin.addEventListener("click", async () => {
+  const email = loginEmail.value.trim();
+  const senha = loginSenha.value.trim();
+
+  if (!email && !senha) {
+    alert("Informe email e senha.");
+    return;
+  }
+
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+    const user = userCredential.user;
+
+    // 🔹 Busca dados do Firestore
+    const docSnap = await getDoc(doc(db, "usuarios", user.uid));
+    if (!docSnap.exists()) throw new Error("Usuário não encontrado no Firestore.");
+    setHeader(docSnap.data());
+
+    chatBox.innerHTML = "";
+    addMsg("Hoper", `Bem-vindo de volta, ${docSnap.data().nome.split(" ")[0]}! Como posso ajudar hoje?`);
+    atualizarHoperPorHumor("");
+    showAgent();
+  } catch (e) {
+    alert(e.message || "Erro ao logar");
+  }
+});
+
+// ====================== LOGOUT ======================
 btnLogout.addEventListener("click", async () => {
   try {
     await signOut(auth);
-  } catch (e) {
-    alert("Erro ao sair: " + e.message);
-  }
-});
-
-// ✅ Atualiza a UI com base no usuário
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    loginForm.classList.add("hidden");
-    devocionalSection.classList.remove("hidden");
-
-    try {
-      const q = query(collection(db, "usuarios"), where("uid", "==", user.uid));
-      const docs = await getDocs(q);
-      let nome = user.email;
-      docs.forEach(doc => {
-        nome = doc.data().nome || nome;
-      });
-      welcome.textContent = `Bem-vindo, ${nome}`;
-    } catch (error) {
-      console.error("Erro ao buscar nome:", error);
-      welcome.textContent = `Bem-vindo, ${user.email}`;
-    }
-
-    carregarHistorico(user.uid);
-  } else {
-    loginForm.classList.remove("hidden");
-    devocionalSection.classList.add("hidden");
+    currentUserData = null;
+    chatBox.innerHTML = "";
+    msgInput.value = "";
+    loginEmail.value = "";
+    loginSenha.value = "";
+    hoperImg.src = "hoper_jovem_feliz.gif";
     welcome.textContent = "";
-    entradaTexto.value = "";
-    history.innerHTML = "";
+    userBadge.textContent = "";
+    showAuth();
+    addMsg("Hoper", "Você saiu da conta. Até logo! 👋");
+  } catch (e) {
+    console.error("Erro ao sair:", e);
+    alert("Não foi possível sair da conta.");
   }
 });
 
-// ✅ Salvar entrada
-btnSalvar.addEventListener("click", salvarEntrada);
+// ====================== ENVIO DE MENSAGENS ======================
+async function enviar(texto) {
+  if (!currentUserData) {
+    alert("Faça login primeiro.");
+    showAuth();
+    return;
+  }
 
-//filtro
-const filtroTipo = document.getElementById("filtroTipo");
-if (filtroTipo) {
-  filtroTipo.addEventListener("change", () => {
-    const user = auth.currentUser;
-    if (user) {
-      carregarHistorico(user.uid, filtroTipo.value);
-    }
-  });
+  addMsg("Você", texto);
+
+  const digitando = document.createElement("div");
+  digitando.className = "msg bot";
+  digitando.innerHTML = `
+    <div class="who">Hoper</div>
+    <div class="bubble">digitando…</div>
+  `;
+  chatBox.appendChild(digitando);
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  try {
+    const res = await fetch(`${BASE_URL}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: currentUserData.uid, texto })
+    });
+
+    const data = await res.json();
+    chatBox.removeChild(digitando);
+    addMsg("Hoper", data.resposta || "Não consegui responder.");
+    atualizarHoperPorHumor(data.resposta);
+  } catch (e) {
+    chatBox.removeChild(digitando);
+    addMsg("Hoper", "Erro ao conectar ao servidor.");
+  }
 }
 
-// // Opcional: Enter para login
-// emailInput.addEventListener('keydown', e => { if(e.key==='Enter') btnLogin.click(); });
-// passwordInput.addEventListener('keydown', e => { if(e.key==='Enter') btnLogin.click(); });
+function enviarMsgInput() {
+  const t = msgInput.value.trim();
+  if (!t) return;
+  msgInput.value = "";
+  enviar(t);
+}
+
+btnEnviar.addEventListener("click", enviarMsgInput);
+msgInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    enviarMsgInput();
+  }
+});
+
+// ====================== BOTÕES DE ATALHO ======================
+const atalhos = [
+  { btn: btnSintoma, msg: "Me dê um sintoma comum para análise." },
+  { btn: btnDica, msg: "Me dê uma dica de prevenção contra doenças comuns." }
+];
+
+atalhos.forEach(a => a.btn.addEventListener("click", () => enviar(a.msg)));
+
+// ====================== BOOT / SESSÃO ======================
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    try {
+      const docSnap = await getDoc(doc(db, "usuarios", user.uid));
+      if (!docSnap.exists()) throw new Error("Usuário não encontrado no Firestore.");
+      setHeader(docSnap.data());
+      chatBox.innerHTML = "";
+      addMsg("Hoper", `Olá, ${docSnap.data().nome.split(" ")[0]}! Retomando nosso atendimento.`);
+      atualizarHoperPorHumor("");
+      showAgent();
+    } catch (e) {
+      console.error("Erro ao restaurar sessão:", e);
+      showAuth();
+    }
+  } else {
+    showAuth();
+  }
+});
