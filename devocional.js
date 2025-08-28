@@ -159,95 +159,46 @@ function capitalizeFirstLetter(str) {
   return str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
 }
 
-// ====================== REGISTRO ======================
+// ✅ Login
+btnLogin.addEventListener("click", () => {
+  const email = emailInput.value.trim();
+  const senha = passwordInput.value.trim();
+  if (!email || !senha) {
+    alert("Preencha email e senha");
+    return;
+  }
+
+  signInWithEmailAndPassword(auth, email, senha)
+    .catch(e => alert("Erro ao logar: " + e.message));
+});
+
+// ✅ Registro
 btnRegister.addEventListener("click", async () => {
-  const nome = regNome.value.trim();
-  const email = regEmail.value.trim();
-  const idade = parseInt(regIdade.value, 10);
-  const cep = regCep.value.replace(/\D/g, '');
-  const senha = regSenha.value.trim();
-
-  if (!nome || !email || !cep || !idade || !senha) {
-    alert("Preencha todos os campos.");
+  const email = emailInput.value.trim();
+  const senha = passwordInput.value.trim();
+  const nome = displayNameInput.value.trim();
+  if (!email || !senha || !nome) {
+    alert("Preencha todos os campos");
     return;
   }
 
   try {
-    // 🔹 Cria usuário no Firebase
-    const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-    const user = userCredential.user;
+    const cred = await createUserWithEmailAndPassword(auth, email, senha);
+    const user = cred.user;
 
-    // 🔹 Envia registro para o backend com UID do Firebase
-    const res = await fetch(`${BASE_URL}/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        nome, 
-        email, 
-        cep, 
-        idade, 
-        uid: user.uid  // UID do Firebase
-      })
+    await addDoc(collection(db, "usuarios"), {
+      uid: user.uid,
+      email: user.email,
+      nome
     });
 
-    if (!res.ok) throw new Error("Falha ao registrar no backend.");
-    const data = await res.json();
-    currentUserId = data.user_id;
-
-    // 🔹 Atualiza interface
-    setHeader({ nome, email, cep, idade });
-    chatBox.innerHTML = "";
-    addMsg("Hoper", `Olá, ${nome.split(" ")[0]}! Estou aqui para ajudar. 👩‍⚕️`);
-    showAgent();
+    alert("Conta criada! Faça login.");
+    displayNameInput.value = "";
+    passwordInput.value = "";
   } catch (e) {
-    alert(e.message || "Erro ao registrar");
+    alert("Erro ao registrar: " + e.message);
   }
 });
-
-// ====================== LOGIN ======================
-btnLogin.addEventListener("click", async () => {
-  const email = loginEmail.value.trim();
-  const senha = loginSenha.value.trim();
-
-  if (!email && !senha) {
-    alert("Informe email e senha.");
-    return;
-  }
-
-  try {
-    // 🔹 Login no Firebase
-    const userCredential = await signInWithEmailAndPassword(auth, email, senha);
-    const user = userCredential.user;
-
-    // 🔹 Envia UID para o backend para buscar dados
-    const payload = { uid: user.uid };
-    const res = await fetch(`${BASE_URL}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-
-    if (!res.ok) throw new Error("Usuário não encontrado no backend.");
-    const data = await res.json();
-    currentUserId = data.user_id;
-
-    const safeData = {
-      nome: data.nome || user.email,
-      idade: data.idade || 30,
-      cep: data.cep || "",
-      email: data.email || user.email
-    };
-
-    setHeader(safeData);
-    chatBox.innerHTML = "";
-    addMsg("Hoper", `Bem-vindo de volta, ${safeData.nome.split(" ")[0]}! Como posso ajudar hoje?`);
-    atualizarHoperPorHumor("");
-    showAgent();
-  } catch (e) {
-    alert(e.message || "Erro ao logar");
-  }
-});
-
 
 // ✅ Logout
 btnLogout.addEventListener("click", async () => {
